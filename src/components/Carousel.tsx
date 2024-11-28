@@ -31,7 +31,7 @@ const Carousel: React.FC = () => {
     return (
         <section
             aria-label={"Carousel"}
-            className="relative w-full max-w-4xl mx-auto overflow-hidden"
+            className="relative w-full max-w-5xl mx-auto overflow-hidden"
             onMouseEnter={stopAutoSlide}
             onMouseLeave={startAutoSlide}
         >
@@ -45,14 +45,14 @@ const Carousel: React.FC = () => {
                         <img
                             src={slide.urlBg}
                             alt={`Fondo del slide ${slide.title}`}
-                            className="w-full h-auto rounded-xl"
+                            className="w-full h-auto rounded-xl shadow-below"
                         />
 
                         <div className="absolute bottom-4 left-4 flex items-center space-x-4">
                             <img
                                 src={slide.urlOverlay}
                                 alt={`Overlay de ${slide.title}`}
-                                className="rounded-xl w-2/4 h-auto ml-2"
+                                className="rounded-xl w-2/4 h-auto ml-2 shadow-lg"
                             />
                             <div className="text-white flex flex-col justify-center">
                                 <h1 className="font-bold text-2xl">{slide.title}</h1>

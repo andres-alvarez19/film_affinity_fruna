@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
                             </a>
                         </li>
                         <li>
-                            <a href="/Actors" className="font-semibold text-white hover:text-white">
+                            <a href="/src/components/ActorOverlay" className="font-semibold text-white hover:text-white">
                                 Actores
                             </a>
                         </li>
