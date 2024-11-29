@@ -11,7 +11,7 @@ const ActorOverlay: React.FC<ActorProps> = ({ name, imageUrl }) => {
             <img
                 src={imageUrl}
                 alt={`Foto de ${name}`}
-                className="w-32 h-44 rounded-lg object-cover"
+                className="w-40 h-52 rounded-lg object-cover"
             />
             <h2 className="font-medium">{name}</h2>
         </div>

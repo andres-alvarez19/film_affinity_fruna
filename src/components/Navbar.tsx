@@ -1,11 +1,11 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Navbar: React.FC = () => {
     return (
-        <nav className="bg-gray-800 py-3">
+        <nav className="bg-gray-800 py-3 px-6">
             <div className="container mx-auto flex justify-between items-center">
-
-                <a href="/" className="flex items-center justify-start">
+                <Link to="/" className="flex items-center justify-start">
                     <svg width="24" height="35" viewBox="0 0 44 55" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path
                             d="M41.2024 22.4476L26.0429 3.49813C27.427 5.22825 26.6483 9.25904 24.3249 13.9845C22.9028 16.8769 20.9017 20.032 18.4631 23.0789C16.0246 26.1257 13.5015 28.6285 11.1866 30.4061C7.40727 33.3104 4.18371 34.2851 2.79855 32.5536L17.9581 51.5031C19.3422 53.2332 22.5658 52.2598 26.3472 49.3556C28.6611 47.5779 31.1852 45.0765 33.6227 42.0283C36.0602 38.9802 38.0623 35.8263 39.4845 32.9327C41.8079 28.2072 42.5865 24.1803 41.2024 22.4476Z"
@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
                               fill="#F4C753"/>
                     </svg>
                     <h1 className="pl-2 font-bold text-xl text-white"> Film Affinity Fruna</h1>
-                </a>
+                </Link>
 
                 <div
                     className="flex items-center bg-customBg rounded-md px-1 border border-gray-500 focus-within:border-2 focus-within:border-white transition-colors duration-200">
@@ -42,23 +42,22 @@ const Navbar: React.FC = () => {
                     />
                 </div>
 
-
                 <div className="flex space-x-4 items-center">
                     <ul className="flex space-x-4">
                         <li>
-                            <a href="/Movies" className="font-semibold text-white hover:text-white">
+                            <Link to="/Movies" className="font-semibold text-white hover:text-white">
                                 Peliculas
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="/src/components/ActorOverlay" className="font-semibold text-white hover:text-white">
+                            <Link to="/src/components/overlay/ActorOverlay" className="font-semibold text-white hover:text-white">
                                 Actores
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="/Directors" className="font-semibold text-white hover:text-white">
+                            <Link to="/Directors" className="font-semibold text-white hover:text-white">
                                 Directores
-                            </a>
+                            </Link>
                         </li>
                     </ul>
 
@@ -70,7 +69,6 @@ const Navbar: React.FC = () => {
                         </svg>
                     </button>
                 </div>
-
             </div>
         </nav>
     );

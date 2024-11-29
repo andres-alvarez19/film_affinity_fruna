@@ -1,10 +1,11 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, { useState, useEffect, useRef } from "react";
+import backupImage from "../assets/images/800x300.png";
 
 const Carousel: React.FC = () => {
     const slides = [
-        {id: 0, urlBg: "https://via.placeholder.com/800x300?text=Slide+1", urlOverlay: "https://placehold.co/300x200", urlTrailer: "https://www.youtube.com/watch?v=juj9wukzfqo", title: "Pelicula"},
-        {id: 1, urlBg: "https://via.placeholder.com/800x300?text=Slide+2", urlOverlay: "https://placehold.co/300x200", urlTrailer: "https://www.youtube.com/watch?v=juj9wukzfqo", title: "Pelicula"},
-        {id: 2, urlBg:"https://via.placeholder.com/800x300?text=Slide+3", urlOverlay: "https://placehold.co/300x200", urlTrailer: "https://www.youtube.com/watch?v=juj9wukzfqo", title: "Pelicula"},
+        { id: 0, urlBg: "https://via.placeholder.com/800x300?text=Slide+1", urlOverlay: "https://placehold.co/300x200", urlTrailer: "https://www.youtube.com/watch?v=juj9wukzfqo", title: "Pelicula" },
+        { id: 1, urlBg: "https://via.placeholder.com/800x300?text=Slide+2", urlOverlay: "https://placehold.co/300x200", urlTrailer: "https://www.youtube.com/watch?v=juj9wukzfqo", title: "Pelicula" },
+        { id: 2, urlBg: "https://via.placeholder.com/800x300?text=Slide+3", urlOverlay: "https://placehold.co/300x200", urlTrailer: "https://www.youtube.com/watch?v=juj9wukzfqo", title: "Pelicula" },
     ];
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -26,19 +27,18 @@ const Carousel: React.FC = () => {
     useEffect(() => {
         startAutoSlide();
         return () => stopAutoSlide();
-    }, [slides.length]);
+    }, [slides.length, startAutoSlide]);
 
     return (
         <section
             aria-label={"Carousel"}
-            className="relative w-full max-w-5xl mx-auto overflow-hidden"
+            className="flex relative w-full max-w-5xl mx-auto overflow-hidden pb-2"
             onMouseEnter={stopAutoSlide}
             onMouseLeave={startAutoSlide}
         >
-
             <div
-                className={`flex transition-transform duration-500 `}
-                style={{transform: `translateX(-${currentIndex * 100}%)`}}
+                className={`flex w-full h-full transition-transform duration-500 `}
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             >
                 {slides.map((slide) => (
                     <div key={slide.id} className="flex-shrink-0 relative w-full px-4 py-2">
@@ -46,15 +46,17 @@ const Carousel: React.FC = () => {
                             src={slide.urlBg}
                             alt={`Fondo del slide ${slide.title}`}
                             className="w-full h-auto rounded-xl shadow-below"
+                            onError={(e) => {
+                                e.currentTarget.src = backupImage;
+                            }}
                         />
-
                         <div className="absolute bottom-4 left-4 flex items-center space-x-4">
                             <img
                                 src={slide.urlOverlay}
                                 alt={`Overlay de ${slide.title}`}
-                                className="rounded-xl w-2/4 h-auto ml-2 shadow-lg"
+                                className="rounded-xl w-full h-auto ml-2 shadow-lg"
                             />
-                            <div className="text-white flex flex-col justify-center">
+                            <div className="w-full text-white flex flex-col justify-center">
                                 <h1 className="font-bold text-2xl">{slide.title}</h1>
                                 <a
                                     href={slide.urlTrailer}
@@ -70,8 +72,7 @@ const Carousel: React.FC = () => {
                 ))}
             </div>
 
-
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 pb-2">
                 {slides.map((slide) => (
                     <button
                         tabIndex={0}
