@@ -17,13 +17,13 @@ const ReviewOverlay: React.FC<ReviewProps> = ({ reviewer, reviewText, rating, mo
                 <div className="flex flex-row">
                     <div className="flex pb-0 p-2 pr-0">
                         <img
-                            src={posterUrl}
+                            src={`http://localhost:8080${posterUrl}`}
                             alt={`Poster of ${movieTitle}`}
-                            className="h-40 w-32 mb-0 rounded-lg object-cover"
+                            className="h-48 w-36 mb-0 rounded-lg object-cover"
                         />
                     </div>
                     <div className="flex flex-col flex-grow p-3 pr-0 pb-0">
-                        <p className="text-sm align-top ml-0 m-3 mt-1">"{reviewText}"</p>
+                        <p className="text-lg align-top ml-0 m-3 mt-1 break-words italic font-normal w-48">"{reviewText}"</p>
                         <div className="flex flex-col mt-auto">
                             <h2 className="font-bold text-sm mr-2">{reviewer}</h2>
                             <div className="text-sm flex">
@@ -34,7 +34,7 @@ const ReviewOverlay: React.FC<ReviewProps> = ({ reviewer, reviewText, rating, mo
                     </div>
                 </div>
                 <div className="pl-3 py-2">
-                    <h2 className="font-bold text-sm ">{movieTitle}</h2>
+                    <h2 className="font-bold text-lg ">{movieTitle}</h2>
                 </div>
             </div>
         </div>

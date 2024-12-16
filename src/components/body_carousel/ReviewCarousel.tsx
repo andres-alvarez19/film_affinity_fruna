@@ -1,29 +1,67 @@
-// src/components/body_carousel/ReviewCarousel.tsx
-import React from "react";
-import GenericCarousel from "../body_carousel/GenericCarousel";
+import React, { useEffect, useState } from "react";
+import GenericCarousel from "./GenericCarousel";
 import ReviewOverlay from "../overlay/ReviewOverlay";
-
-const reviews = [
-    { id: 1, reviewer: "John Doe", reviewText: "Great movie!", rating: 5, movieTitle: "Top Gun", posterUrl: "https://via.placeholder.com/150x200?text=Top+Gun" },
-    { id: 2, reviewer: "Jane Smith", reviewText: "Not bad, but could be better.", rating: 3, movieTitle: "The Godfather", posterUrl: "https://via.placeholder.com/150x200?text=The+Godfather" },
-    { id: 3, reviewer: "Alice Johnson", reviewText: "I loved it!", rating: 4, movieTitle: "Inception", posterUrl: "https://via.placeholder.com/150x200?text=Inception" },
-    { id: 4, reviewer: "Bob Brown", reviewText: "It was okay.", rating: 3, movieTitle: "Forrest Gump", posterUrl: "https://via.placeholder.com/150x200?text=Forrest+Gump" },
-    { id: 5, reviewer: "Charlie Davis", reviewText: "Amazing experience!", rating: 5, movieTitle: "Training Day", posterUrl: "https://via.placeholder.com/150x200?text=Training+Day" },
-];
+import { fetchReviews, fetchUserById, fetchMovieById, Review, User, Movie } from "../api/api.ts";
 
 const ReviewCarousel: React.FC = () => {
+    const [reviews, setReviews] = useState<Review[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [users, setUsers] = useState<{ [key: number]: User }>({});
+    const [movies, setMovies] = useState<{ [key: number]: Movie }>({});
+
+    useEffect(() => {
+        const getReviews = async () => {
+            try {
+                const data = await fetchReviews();
+                setReviews(data);
+
+                const userPromises = data.map(review => fetchUserById(review.userId));
+                const moviePromises = data.map(review => fetchMovieById(review.movieId));
+
+                const users = await Promise.all(userPromises);
+                const movies = await Promise.all(moviePromises);
+
+                const usersMap = users.reduce((acc, user) => {
+                    acc[user.id] = user;
+                    return acc;
+                }, {} as { [key: number]: User });
+
+                const moviesMap = movies.reduce((acc, movie) => {
+                    acc[movie.id] = movie;
+                    return acc;
+                }, {} as { [key: number]: Movie });
+
+                setUsers(usersMap);
+                setMovies(moviesMap);
+            } catch (error) {
+                setError("There was an error fetching the reviews!");
+                console.error(error);
+            }
+        };
+
+        void getReviews();
+    }, []);
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+
     return (
         <GenericCarousel
             items={reviews}
-            renderItem={(review) => (
-                <ReviewOverlay
-                    reviewer={review.reviewer}
-                    reviewText={review.reviewText}
-                    rating={review.rating}
-                    movieTitle={review.movieTitle}
-                    posterUrl={review.posterUrl}
-                />
-            )}
+            renderItem={(review) => {
+                const user = users[review.userId];
+                const movie = movies[review.movieId];
+                return (
+                    <ReviewOverlay
+                        reviewer={user ? user.username: "Unknown"}
+                        reviewText={review.description}
+                        rating={review.rating}
+                        movieTitle={movie ? movie.name : "Unknown"}
+                        posterUrl={movie ? movie.photoUrl: "https://via.placeholder.com/150x200?text=Movie+Poster"}
+                    />
+                );
+            }}
             title="Reseñas"
             bgColor={"bg-gray-200"}
         />

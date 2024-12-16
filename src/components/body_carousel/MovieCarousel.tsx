@@ -1,26 +1,47 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import MovieOverlay from "../overlay/MovieOverlay.tsx";
 import GenericCarousel from "./GenericCarousel.tsx";
-
-const movies = [
-    { id: 1, title: "Top Gun", posterUrl: "https://via.placeholder.com/150x200?text=Top+Gun", director: "Tony Scott" },
-    { id: 2, title: "The Godfather", posterUrl: "https://via.placeholder.com/150x200?text=The+Godfather", director: "Francis Ford Coppola" },
-    { id: 3, title: "Inception", posterUrl: "https://via.placeholder.com/150x200?text=Inception", director: "Christopher Nolan" },
-    { id: 4, title: "Forrest Gump", posterUrl: "https://via.placeholder.com/150x200?text=Forrest+Gump", director: "Robert Zemeckis" },
-    { id: 5, title: "Training Day", posterUrl: "https://via.placeholder.com/150x200?text=Training+Day", director: "Antoine Fuqua" },
-    { id: 6, title: "Taxi Driver", posterUrl: "https://via.placeholder.com/150x200?text=Taxi+Driver", director: "Martin Scorsese" },
-    { id: 7, title: "The Iron Lady", posterUrl: "https://via.placeholder.com/150x200?text=The+Iron+Lady", director: "Phyllida Lloyd" },
-];
+import { allMoviesWithDirectors } from "../api/apiUtils.ts";
+import { Movie, Director } from "../api/api.ts";
 
 const MovieCarousel: React.FC = () => {
+    const [movies, setMovies] = useState<Movie[]>([]);
+    const [directors, setDirectors] = useState<{ [key: number]: Director }>({});
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const { movies, directors } = allMoviesWithDirectors;
+                setMovies(movies);
+                setDirectors(directors);
+            } catch (error) {
+                setError("There was an error fetching the movies!");
+                console.error(error);
+            }
+        };
+
+        void fetchData();
+    }, []);
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+
     return (
         <GenericCarousel
             items={movies}
-            renderItem={(movie) => <MovieOverlay title={movie.title} posterUrl={movie.posterUrl} director={movie.director} />}
+            renderItem={(movie) => (
+                <MovieOverlay
+                    title={movie.name}
+                    posterUrl={movie.photoUrl}
+                    director={directors[movie.id]?.name ?? "Unknown"}
+                />
+            )}
             title="Peliculas"
             bgColor={""}
         />
     );
-}
+};
 
 export default MovieCarousel;
