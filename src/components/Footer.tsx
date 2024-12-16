@@ -4,12 +4,12 @@ import React from "react";
 const Footer: React.FC = () => {
     return (
         <footer className="bg-gray-800">
-            <div className="container mx-auto flex-row items-center">
+            <div className="flex flex-col container mx-auto items-center">
 
-                <div className="container flex-col space-x-12 py-4 text-center text-white text-sm font-normal">
-                    <a href="/About">Sobre nosotros</a>
-                    <a href="/Contact">Contactenos</a>
-                    <a href="/TermsConditions">Terminos y condiciones</a>
+                <div className="container flex-col space-x-8 py-4 text-center text-white font-normal">
+                    <a className="hover:shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out p-2 rounded-lg" href="/About">Sobre nosotros</a>
+                    <a className="hover:shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out p-2 rounded-lg" href="/Contact">Contactenos</a>
+                    <a className="hover:shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out p-2 rounded-lg" href="/TermsConditions">Terminos y condiciones</a>
                 </div>
 
 

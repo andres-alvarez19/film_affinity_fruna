@@ -83,7 +83,7 @@ const scrollRight = () => {
                 </button>
             )}
 
-            <ul ref={carouselRef} className="flex flex-row overflow-x-hidden space-x-1 pl-4 pt-1 pb-4 scroll-smooth">
+            <ul ref={carouselRef} className="flex flex-row overflow-x-auto space-x-1 pl-4 pt-1 pb-4 scroll-smooth">
                 {items.map((item, index) => (
                     <li key={index} className="flex-shrink-0">
                         {renderItem(item)}
