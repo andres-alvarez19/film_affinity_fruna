@@ -3,7 +3,7 @@ import React from 'react';
 interface MovieProps {
     title: string;
     posterUrl: string;
-    director: string;
+    director?: string;
 }
 
 const MovieOverlay: React.FC<MovieProps> = ({ title, posterUrl, director }) => {

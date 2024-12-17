@@ -43,6 +43,7 @@ export interface Movie {
     photoUrl: string;
     trailerUrl: string;
     overviewUrl: string;
+    type: "movie";
 }
 
 export interface User {
@@ -122,4 +123,17 @@ export const fetchByActorId = async (id: number): Promise<Actor> => {
     return response.data;
 }
 
+export  const fetchActorByNames = async (name: string): Promise<Actor[]> => {
+    const response = await axios.get<Actor[]>(`${API_URL}/actor/search/name/${name}`);
+    return response.data;
+}
 
+export const fetchDirectorByNames = async (name: string): Promise<Director[]> => {
+    const response = await axios.get<Director[]>(`${API_URL}/director/search/name/${name}`);
+    return response.data;
+}
+
+export const fetchMoviesByActorName = async (name: string): Promise<Movie[]> => {
+    const response = await axios.get<Movie[]>(`${API_URL}/movie/search/name/${name}`);
+    return response.data;
+}
