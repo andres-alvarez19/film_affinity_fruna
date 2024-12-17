@@ -11,6 +11,7 @@ import Director from "./components/list/DirectorList.tsx";
 import Movie from "./components/list/MovieList.tsx";
 import EntityDetailPage from "./pages/EntityDetailPage.tsx";
 import MovieDetailPage from "./pages/MovieDetailPage.tsx";
+import SearchResults from "./pages/SearchResults.tsx";
 
 const App: React.FC = () => {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -30,6 +31,7 @@ const App: React.FC = () => {
                         <Route path="/directors" element={<Director />} />
                         <Route path="/:type/:id" element={<EntityDetailPage />} />
                         <Route path="/movies/:id" element={<MovieDetailPage/>} />
+                        <Route path="/search" element={<SearchResults />} />
                     </Routes>
                 </main>
 

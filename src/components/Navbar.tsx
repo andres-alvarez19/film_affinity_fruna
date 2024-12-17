@@ -1,29 +1,102 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, {useState, useEffect, useRef} from "react";
+import { Link, useNavigate } from "react-router-dom";
+import EntityOverlay from "./overlay/EntityOverlay.tsx";
+import {
+    fetchActorByNames,
+    fetchDirectorByNames,
+    fetchMoviesByActorName,
+} from "./api/api.ts";
 
 interface NavbarProps {
     onAuthClick: () => void;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
+    const [searchTerm, setSearchTerm] = useState("");
+    const [results, setResults] = useState<any[]>([]);
+    const navigate = useNavigate();
+    const searchContainerRef = useRef<HTMLDivElement>(null); // Ref al contenedor
+
+    useEffect(() => {
+        const fetchResults = async () => {
+            if (!searchTerm.trim()) {
+                setResults([]);
+                return;
+            }
+
+            try {
+                const [actors, directors, movies] = await Promise.all([
+                    fetchActorByNames(searchTerm).catch(() => []),
+                    fetchDirectorByNames(searchTerm).catch(() => []),
+                    fetchMoviesByActorName(searchTerm).catch(() => []),
+                ]);
+
+                const formattedResults = [
+                    ...actors.map((actor) => ({
+                        id: actor.id,
+                        name: actor.name,
+                        imageUrl: actor.photoUrl,
+                        type: "actor",
+                    })),
+                    ...directors.map((director) => ({
+                        id: director.id,
+                        name: director.name,
+                        imageUrl: director.photoUrl,
+                        type: "director",
+                    })),
+                    ...movies.map((movie) => ({
+                        id: movie.id,
+                        name: movie.name,
+                        imageUrl: movie.photoUrl,
+                        type: "movies",
+                    })),
+                ];
+
+                setResults(formattedResults.slice(0, 5));
+            } catch (error) {
+                console.error();
+            }
+        };
+
+        const timeoutId = setTimeout(fetchResults, 300); // debounce de 300ms
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                searchContainerRef.current &&
+                !searchContainerRef.current.contains(event.target as Node)
+            ) {
+                setResults([]);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
+
+    const handleSearchRedirect = () => {
+        if (searchTerm.trim() !== "") {
+            navigate(`/search?query=${searchTerm}`);
+        }
+    };
+
     return (
         <nav className="bg-gray-800 py-3 px-6">
             <div className="container mx-auto flex justify-between items-center">
                 <Link to="/" className="flex items-center justify-start ">
-                    <svg width="24" height="35" viewBox="0 0 44 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M41.2024 22.4476L26.0429 3.49813C27.427 5.22825 26.6483 9.25904 24.3249 13.9845C22.9028 16.8769 20.9017 20.032 18.4631 23.0789C16.0246 26.1257 13.5015 28.6285 11.1866 30.4061C7.40727 33.3104 4.18371 34.2851 2.79855 32.5536L17.9581 51.5031C19.3422 53.2332 22.5658 52.2598 26.3472 49.3556C28.6611 47.5779 31.1852 45.0765 33.6227 42.0283C36.0602 38.9802 38.0623 35.8263 39.4845 32.9327C41.8079 28.2072 42.5865 24.1803 41.2024 22.4476Z"
-                            fill="#F4C753"/>
-                        <path fillRule="evenodd" clipRule="evenodd"
-                              d="M4.29465 30.6795C4.37073 30.7244 4.71728 30.8869 5.65022 30.6359C6.78074 30.3322 8.30219 29.5226 10.0804 28.1557C12.2358 26.5008 14.6321 24.1328 16.9692 21.2114C19.3063 18.29 21.2007 15.2946 22.5246 12.6004C23.6181 10.3763 24.2658 8.47585 24.5088 7.0627C24.7095 5.89652 24.5796 5.46333 24.5437 5.36824C24.4781 5.32862 24.2647 5.24013 23.7618 5.3022C23.0296 5.39069 21.9952 5.77502 20.7009 6.55687C18.1303 8.11266 14.9606 10.9812 11.8723 14.8403C8.78398 18.6994 6.49019 22.6629 5.24662 25.8761C4.62007 27.494 4.31262 28.787 4.24183 29.7009C4.19217 30.3309 4.26296 30.599 4.29465 30.6795ZM28.2342 9.97353C27.7609 11.6944 27.0319 13.5236 26.1253 15.3673C24.6049 18.4591 22.496 21.774 19.9571 24.9464C17.4182 28.1187 14.7673 30.7561 12.2939 32.6566C10.8189 33.7898 9.35664 34.7011 7.97783 35.2927L19.4383 49.6184C19.4648 49.6369 19.7817 49.8614 20.8098 49.5854C21.9403 49.2816 23.4617 48.472 25.2399 47.1051C27.3953 45.449 29.7905 43.0823 32.1287 40.1609C34.4669 37.2395 36.3592 34.2441 37.6841 31.5499C38.7776 29.3258 39.4253 27.4253 39.6683 26.0122C39.8891 24.7258 39.7095 24.3309 39.6947 24.2979L28.2342 9.97353ZM27.5369 1.63065L42.6964 20.5801C44.1629 22.4119 44.1608 25.0216 43.7995 27.1229C43.4191 29.339 42.5147 31.8153 41.2849 34.3154C39.7634 37.4085 37.6545 40.7235 35.1167 43.8958C32.5788 47.0681 29.9268 49.7056 27.4524 51.6061C25.4523 53.1434 23.4712 54.2739 21.6983 54.7494C20.0184 55.201 17.9296 55.2037 16.4641 53.3705L1.30459 34.4211C0.119123 32.9406 -0.100642 30.9305 0.0356548 29.1885C0.173008 27.424 0.697062 25.4997 1.44194 23.5755C2.94225 19.7018 5.55302 15.2682 8.88436 11.1054C12.2157 6.94252 15.7615 3.67642 18.8604 1.80234C20.3998 0.871243 21.9392 0.216174 23.3508 0.0444824C24.7455 -0.125888 26.3514 0.150139 27.5369 1.62933"
-                              fill="#F4C753"/>
+                    <svg width="24" height="35" viewBox="0 0 44 55" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M41.2024 22.4476L26.0429 3.49813C27.427 5.22825 26.6483 9.25904 24.3249 13.9845C22.9028 16.8769 20.9017 20.032 18.4631 23.0789C16.0246 26.1257 13.5015 28.6285 11.1866 30.4061C7.40727 33.3104 4.18371 34.2851 2.79855 32.5536L17.9581 51.5031C19.3422 53.2332 22.5658 52.2598 26.3472 49.3556C28.6611 47.5779 31.1852 45.0765 33.6227 42.0283C36.0602 38.9802 38.0623 35.8263 39.4845 32.9327C41.8079 28.2072 42.5865 24.1803 41.2024 22.4476Z" fill="#F4C753"/> <path fillRule="evenodd" clipRule="evenodd" d="M4.29465 30.6795C4.37073 30.7244 4.71728 30.8869 5.65022 30.6359C6.78074 30.3322 8.30219 29.5226 10.0804 28.1557C12.2358 26.5008 14.6321 24.1328 16.9692 21.2114C19.3063 18.29 21.2007 15.2946 22.5246 12.6004C23.6181 10.3763 24.2658 8.47585 24.5088 7.0627C24.7095 5.89652 24.5796 5.46333 24.5437 5.36824C24.4781 5.32862 24.2647 5.24013 23.7618 5.3022C23.0296 5.39069 21.9952 5.77502 20.7009 6.55687C18.1303 8.11266 14.9606 10.9812 11.8723 14.8403C8.78398 18.6994 6.49019 22.6629 5.24662 25.8761C4.62007 27.494 4.31262 28.787 4.24183 29.7009C4.19217 30.3309 4.26296 30.599 4.29465 30.6795ZM28.2342 9.97353C27.7609 11.6944 27.0319 13.5236 26.1253 15.3673C24.6049 18.4591 22.496 21.774 19.9571 24.9464C17.4182 28.1187 14.7673 30.7561 12.2939 32.6566C10.8189 33.7898 9.35664 34.7011 7.97783 35.2927L19.4383 49.6184C19.4648 49.6369 19.7817 49.8614 20.8098 49.5854C21.9403 49.2816 23.4617 48.472 25.2399 47.1051C27.3953 45.449 29.7905 43.0823 32.1287 40.1609C34.4669 37.2395 36.3592 34.2441 37.6841 31.5499C38.7776 29.3258 39.4253 27.4253 39.6683 26.0122C39.8891 24.7258 39.7095 24.3309 39.6947 24.2979L28.2342 9.97353ZM27.5369 1.63065L42.6964 20.5801C44.1629 22.4119 44.1608 25.0216 43.7995 27.1229C43.4191 29.339 42.5147 31.8153 41.2849 34.3154C39.7634 37.4085 37.6545 40.7235 35.1167 43.8958C32.5788 47.0681 29.9268 49.7056 27.4524 51.6061C25.4523 53.1434 23.4712 54.2739 21.6983 54.7494C20.0184 55.201 17.9296 55.2037 16.4641 53.3705L1.30459 34.4211C0.119123 32.9406 -0.100642 30.9305 0.0356548 29.1885C0.173008 27.424 0.697062 25.4997 1.44194 23.5755C2.94225 19.7018 5.55302 15.2682 8.88436 11.1054C12.2157 6.94252 15.7615 3.67642 18.8604 1.80234C20.3998 0.871243 21.9392 0.216174 23.3508 0.0444824C24.7455 -0.125888 26.3514 0.150139 27.5369 1.62933" fill="#F4C753"/>
                     </svg>
                     <h1 className="pl-2 font-bold text-xl text-white">Film Affinity Fruna</h1>
                 </Link>
 
                 <div
-                    className="flex items-center bg-customBg rounded-md px-1 border border-gray-500 focus-within:border-2 focus-within:border-white transition-colors duration-200"
-                >
+                    ref={searchContainerRef}
+                    className="relative flex w-1/4 items-center bg-customBg rounded-md px-1 border border-gray-500 focus-within:border-2 focus-within:border-white transition-colors duration-200">
+
                     <div className="flex items-center pr-1 border-r border-r-gray-500">
                         <svg
                             width="24"
@@ -43,24 +116,51 @@ const Navbar: React.FC<NavbarProps> = ({ onAuthClick }) => {
                     <input
                         type="text"
                         placeholder="Buscar"
-                        className="bg-customBg text-white px-2 py-1 rounded outline-none"
+                        className="bg-customBg w-full text-white px-2 py-1 rounded outline-none"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearchRedirect()}
                     />
+                    {results.length > 0 && (
+                        <div className="absolute top-full left-0 mt-1 w-full bg-gray-700 text-white rounded shadow-md z-10 max-h-48 overflow-y-auto">
+                            {results.map((result, index) => (
+                                <div key={index} className="px-3 py-2 hover:bg-gray-600">
+                                    <EntityOverlay
+                                        id={result.id}
+                                        name={result.name}
+                                        imageUrl={result.imageUrl}
+                                        type={result.type}
+                                        size="small"
+                                    />
+                                </div>
+                            ))}
+                            <button
+                                onClick={handleSearchRedirect}
+                                className="w-full text-center text-yellow-400 py-2 hover:bg-gray-600"
+                            >
+                                Ver todos los resultados
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex space-x-4 items-center">
                     <ul className="flex space-x-2">
                         <li>
-                            <Link to="/movies" className="font-semibold text-white  hover:shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out p-2 rounded-2xl">
+                            <Link to="/movies"
+                                  className="font-semibold text-white  hover:shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out p-2 rounded-2xl">
                                 Películas
                             </Link>
                         </li>
                         <li>
-                            <Link to="/actors" className="font-semibold text-white hover:shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out p-2 rounded-2xl">
+                            <Link to="/actors"
+                                  className="font-semibold text-white hover:shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out p-2 rounded-2xl">
                                 Actores
                             </Link>
                         </li>
                         <li>
-                            <Link to="/directors" className="font-semibold text-white hover:shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out p-2 rounded-2xl">
+                            <Link to="/directors"
+                                  className="font-semibold text-white hover:shadow-lg hover:bg-gray-600 transition duration-300 ease-in-out p-2 rounded-2xl">
                                 Directores
                             </Link>
                         </li>
