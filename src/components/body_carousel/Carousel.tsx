@@ -12,7 +12,7 @@ const Carousel: React.FC = () => {
         const fetchData = async () => {
             try {
                 const { movies } = allMoviesWithDirectors;
-                setMovies(movies);
+                setMovies(movies.slice(0, 5));
             } catch (error) {
                 console.error("There was an error fetching the movies!", error);
             }
