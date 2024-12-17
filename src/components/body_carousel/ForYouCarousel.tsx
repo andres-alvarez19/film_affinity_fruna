@@ -16,7 +16,7 @@ const MovieCarousel: React.FC = () => {
     return (
         <GenericCarousel
             items={movies}
-            renderItem={(movie) => <MovieOverlay title={movie.title} posterUrl={movie.posterUrl} director={movie.director} />}
+            renderItem={(movie) => <MovieOverlay id={movie.id} title={movie.title} posterUrl={movie.posterUrl} director={movie.director} type="movies" />}
             title="Recomendadas para ti"
             bgColor={""}
         />

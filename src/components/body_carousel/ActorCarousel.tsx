@@ -29,7 +29,7 @@ const ActorCarousel: React.FC = () => {
     return (
         <GenericCarousel
             items={actors}
-            renderItem={(actor) => <CastOverlay name={actor.name} imageUrl={actor.photoUrl} />}
+            renderItem={(actor) => <CastOverlay id={actor.id} name={actor.name} imageUrl={actor.photoUrl} type={actor.type} />}
             title="Actores"
             bgColor={"bg-gray-200"}
         />

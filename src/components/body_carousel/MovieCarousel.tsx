@@ -33,9 +33,11 @@ const MovieCarousel: React.FC = () => {
             items={movies}
             renderItem={(movie) => (
                 <MovieOverlay
+                    id={movie.id}
                     title={movie.name}
                     posterUrl={movie.photoUrl}
                     director={directors[movie.id]?.name ?? "Unknown"}
+                    type="movies"
                 />
             )}
             title="Peliculas"

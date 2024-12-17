@@ -28,7 +28,7 @@ const DirectorCarousel: React.FC = () => {
     return (
         <GenericCarousel
             items={directors}
-            renderItem={(director) => <CastOverlay name={director.name} imageUrl={director.photoUrl} />}
+            renderItem={(director) => <CastOverlay id={director.id} name={director.name} imageUrl={director.photoUrl} type={director.type} />}
             title="Directores"
             bgColor={"bg-gray-200"}
         />
