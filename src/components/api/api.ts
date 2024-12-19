@@ -17,8 +17,11 @@ export interface Entity {
     name: string;
     photoUrl: string;
     dateOfBirth: string;
+    country: string;
+    biography?: string;
     dateOfDeath?: string;
     wikipediaLink?: string;
+    movies?: Movie[];
     type: "actor" | "director";
 }
 

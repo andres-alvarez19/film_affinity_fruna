@@ -21,7 +21,6 @@ const EntityDetailPage: React.FC = () => {
                 } else {
                     movies = await fetchMoviesByDirectorId(Number(id));
                 }
-
                 setEntity({ ...entityData, movies });
             } catch (error) {
                 return <div className="text-center">Error fetching entity details...</div>;
@@ -46,16 +45,27 @@ const EntityDetailPage: React.FC = () => {
                     />
                     <div className="flex-1">
                         <h1 className="text-4xl font-bold text-gray-800">{entity.name}</h1>
-                        <p className="text-gray-600 mt-4"></p>
+                        <p className="text-gray-600">
+                            <span className="font-semibold">País:</span> {entity.country}
+                        </p>
+                        <p className="text-gray-600">
+                            <span className="font-semibold">Fecha de nacimiento:</span> {entity.dateOfBirth}
+                        </p>
+                        {entity.dateOfDeath && (
+                            <p className="text-gray-600">{entity.dateOfDeath}</p>
+                        )}
                         {entity.wikipediaLink && (
                             <a
                                 href={entity.wikipediaLink}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-blue-500 hover:underline mt-4 inline-block"
+                                className="text-blue-500 hover:underline inline-block"
                             >
                                 Ver en Wikipedia
                             </a>
+                        )}
+                        {entity.biography && (
+                            <p className="text-gray-600 mt-4">{entity.biography}</p>
                         )}
                     </div>
                 </div>
@@ -63,7 +73,7 @@ const EntityDetailPage: React.FC = () => {
                 <div className="mt-8">
                     <h2 className="text-2xl font-semibold text-gray-800">Películas Relacionadas</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-                        {entity.movies.map(movie => (
+                        {entity.movies?.map(movie => (
                             <div
                                 key={movie.id}
                                 className="bg-gray-100 p-4 rounded-lg shadow hover:shadow-lg transition"
